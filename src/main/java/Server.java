@@ -12,7 +12,7 @@ import java.util.Date;
 public class Server {
     private static Date data = new Date();
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
-    final private static int portNumber = 33333;
+    final private static int portNumber = 55555;
     final private static String nameSettings = "settings.txt";
     final private static String nameLog = "file.log";
     final private static String hostname = "127.0.0.1";
@@ -30,7 +30,7 @@ public class Server {
             while (true) {
 
                 try (SocketChannel socketChannel = serverChannel.accept()) {
-                    final ByteBuffer inputBuffer = ByteBuffer.allocate(2 << 20);
+                    final ByteBuffer inputBuffer = ByteBuffer.allocate(2048);
 
                     while (socketChannel.isConnected()) {
                         int bytesCount = socketChannel.read(inputBuffer);
