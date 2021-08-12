@@ -10,8 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Server {
-    private static Date data = new Date();
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
+    private static final Date data = new Date();
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
     final private static int portNumber = 55555;
     final private static String nameSettings = "settings.txt";
     final private static String nameLog = "file.log";
@@ -40,7 +40,7 @@ public class Server {
                         inputBuffer.clear();
 
                         System.out.println(dateFormat.format(data) + ": " + inputString);
-                        socketChannel.write(ByteBuffer.wrap((dateFormat.format(data) + " Новое сообщение в чате: "
+                        socketChannel.write(ByteBuffer.wrap(("\n" + dateFormat.format(data) + " Новое сообщение в чате: "
                                 + inputString).getBytes(StandardCharsets.UTF_8)));
 
                         try (FileWriter writerMsg = new FileWriter(nameLog, true)) {
@@ -57,9 +57,9 @@ public class Server {
         }
     }
 
-    public static void createFiles() {
-        String msgSettings = "Файл settings.txt успешно создан";
-        String msgLog = "Файл file.log успешно создан";
+    public static boolean createFiles() {
+        String msgSettings = "Файл settings.txt создан";
+        String msgLog = "Файл file.log создан";
 
         File settingsFile = new File(nameSettings);
         try {
@@ -85,11 +85,15 @@ public class Server {
         try (FileWriter writerLogs = new FileWriter(nameLog, true)) {
             writerLogs.write(dateFormat.format(data) + ": " + msgSettings + "\n");
             writerLogs.write(dateFormat.format(data) + ": " + msgLog + "\n");
-            writerLogs.write(dateFormat.format(data) + ": чат начал свою работу!\n");
+            writerLogs.write(dateFormat.format(data) + ": Чат запущен\n");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        boolean result = false;
+        if (settingsFile.isFile() && logFile.isFile()) result = true;
+        return result;
     }
+
 
 
 }

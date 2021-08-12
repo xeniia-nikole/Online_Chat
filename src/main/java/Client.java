@@ -6,14 +6,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Scanner;
 
 public class Client {
-    private static Date data = new Date();
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy.MM.dd");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy.MM.dd");
     final private static String nameSettings = "settings.txt";
-    final private static String nameLog = "file.log";
     final private static String hostname = "127.0.0.1";
 
     public static void main(String[] args) {
@@ -24,9 +21,8 @@ public class Client {
 
             SocketChannel socketChannel = SocketChannel.open();
 
-            socketChannel.connect(socketAddress);
-
-            try (Scanner scanner = new Scanner(System.in)) {
+            try (socketChannel; Scanner scanner = new Scanner(System.in)) {
+                socketChannel.connect(socketAddress);
                 final ByteBuffer inputBuffer = ByteBuffer.allocate(2048);
                 String inputString;
                 String clientName = getClientName();
@@ -34,8 +30,7 @@ public class Client {
                 socketChannel.write(ByteBuffer.wrap(newClient.getBytes(StandardCharsets.UTF_8)));
                 inputBuffer.clear();
                 while (true) {
-                    System.out.print(clientName + ", введите Ваше сообщение\n " +
-                            "(для выхода из чата введите команду '/exit'): ");
+                    System.out.print(clientName + ", введите Ваше сообщение или введите команду '/exit' для выхода: ");
                     inputString = scanner.nextLine();
                     if ("/exit".equals(inputString)) {
                         System.out.println(clientName + ", до новых встреч!");
@@ -56,9 +51,6 @@ public class Client {
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            } finally {
-                socketChannel.close();
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,7 +74,6 @@ public class Client {
     public static String getClientName() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Добро пожаловать! Введите ваше имя: ");
-        String name = scanner.nextLine();
-        return name;
+        return scanner.nextLine();
     }
 }
