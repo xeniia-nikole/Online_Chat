@@ -1,3 +1,5 @@
+package Chat_with_ServerSocketChannel;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,7 +24,7 @@ public class Server {
 
             createFiles();
 
-            System.out.println("SYSTEM MESSAGE : Вы вошли в сетевой чат.");
+            System.out.println("SYSTEM MESSAGE : Online chat started");
 
             final ServerSocketChannel serverChannel = ServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(hostname, portNumber));
@@ -40,7 +42,7 @@ public class Server {
                         inputBuffer.clear();
 
                         System.out.println(dateFormat.format(data) + ": " + inputString);
-                        socketChannel.write(ByteBuffer.wrap(("\n" + dateFormat.format(data) + " Новое сообщение в чате: "
+                        socketChannel.write(ByteBuffer.wrap(("\n" + dateFormat.format(data) + " New message: "
                                 + inputString).getBytes(StandardCharsets.UTF_8)));
 
                         try (FileWriter writerMsg = new FileWriter(nameLog, true)) {
@@ -58,8 +60,8 @@ public class Server {
     }
 
     public static boolean createFiles() {
-        String msgSettings = "Файл settings.txt создан";
-        String msgLog = "Файл file.log создан";
+        String msgSettings = "File settings.txt was successfully created";
+        String msgLog = "File file.log was successfully created";
 
         File settingsFile = new File(nameSettings);
         try {
@@ -85,7 +87,7 @@ public class Server {
         try (FileWriter writerLogs = new FileWriter(nameLog, true)) {
             writerLogs.write(dateFormat.format(data) + ": " + msgSettings + "\n");
             writerLogs.write(dateFormat.format(data) + ": " + msgLog + "\n");
-            writerLogs.write(dateFormat.format(data) + ": Чат запущен\n");
+            writerLogs.write(dateFormat.format(data) + ": Online chat started\n");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -93,7 +95,4 @@ public class Server {
         if (settingsFile.isFile() && logFile.isFile()) result = true;
         return result;
     }
-
-
-
 }

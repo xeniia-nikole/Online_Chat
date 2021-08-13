@@ -1,3 +1,5 @@
+package Chat_with_ServerSocketChannel;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,6 +31,7 @@ public class Client {
                 String newClient = clientName + " вошёл в чат";
                 socketChannel.write(ByteBuffer.wrap(newClient.getBytes(StandardCharsets.UTF_8)));
                 inputBuffer.clear();
+
                 while (true) {
                     System.out.print(clientName + ", введите Ваше сообщение или введите команду '/exit' для выхода: ");
                     inputString = scanner.nextLine();

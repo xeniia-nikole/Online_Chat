@@ -1,9 +1,6 @@
+import Chat_with_ServerSocketChannel.Client;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.text.SimpleDateFormat;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ClientTest {
 
