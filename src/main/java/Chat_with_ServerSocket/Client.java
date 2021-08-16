@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Scanner;
 
 public class Client {
     final private static int portNumber = 33333;
@@ -12,41 +13,37 @@ public class Client {
     public static void main(String[] args) {
 
         try (Socket socket = new Socket(hostname, portNumber);
-             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+             PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+             Scanner scanner = new Scanner(System.in)) {
 
             System.out.println("SYSTEM MESSAGE : connected");
             System.out.println();
             System.out.println("SYSTEM MESSAGE : writing channel & reading channel initialized");
-            System.out.println("SYSTEM MESSAGE : Введите ваше имя -  ");
-            String nickname = br.readLine();
-            System.out.println("SYSTEM MESSAGE : Привет, " + nickname + "!\n");
-            out.write(nickname + " entered the chatroom");
+            System.out.println("SYSTEM MESSAGE : Введите ваше имя...  ");
+            String nickname = scanner.nextLine();
+            System.out.println("SYSTEM MESSAGE : Добро пожаловать, " + nickname + "!\n");
+            out.write("SYSTEM MESSAGE : " + nickname + " entered the chatroom\n");
 
             while (true) {
-                    System.out.println("Введите сообщение в чат или '/exit': ");
-                    String clientCommand = br.readLine();
-                    out.write(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss ").
-                            format(Calendar.getInstance().getTime()) + nickname + ": " + clientCommand + "\n");
-                    out.flush();
+                System.out.println("Введите сообщение или '/exit': ");
+                String clientCommand = scanner.nextLine();
 
-                    if (clientCommand.equalsIgnoreCase("/exit")) {
-                        System.out.println("SYSTEM MESSAGE : connections were killed");
+                if (clientCommand.equalsIgnoreCase("/exit")) {
+                    System.out.println("SYSTEM MESSAGE : connections were killed");
+                    break;
+                }
 
-                        if (!in.readLine().isEmpty()) {
-                            System.out.println("SYSTEM MESSAGE : reading server messages...");
-                            String incoming = in.readLine();
-                            System.out.println(incoming);
-                        }
-                        break;
-                    } else {
-                        if (!in.readLine().isEmpty()) {
-                            System.out.println("SYSTEM MESSAGE : reading server messages...");
-                            String incoming = in.readLine();
-                            System.out.println(incoming);
-                        }
-                    }
+                System.out.println(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss ").
+                        format(Calendar.getInstance().getTime()) + nickname + " : " + clientCommand);
+                out.write( nickname + " : " + clientCommand + "\n");
+                out.flush();
+
+                if (!in.readLine().isEmpty()) {
+                    System.out.println("SYSTEM MESSAGE : reading server messages...");
+                    String incoming = in.readLine();
+                    System.out.println(incoming);
+                }
             }
 
             System.out.println("Closing connections & channels on clintSide - DONE");
