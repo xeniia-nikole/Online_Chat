@@ -3,3 +3,5 @@ target/
 build/
 .gradle/
 .idea/
+file.log
+settings.txt

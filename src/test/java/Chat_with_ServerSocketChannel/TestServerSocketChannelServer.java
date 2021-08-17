@@ -5,7 +5,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,14 +13,15 @@ public class TestServerSocketChannelServer {
 
     public static void main(String[] args) {
         try {
-            ExecutorService executor = Executors.newFixedThreadPool(10);
+            ExecutorService executor = Executors.newFixedThreadPool(3);
+            int i = 0;
 
-            for (int i = 0; i < 10; i++) {
-                executor.execute(new TestClientTester());
-                executor.execute(new TestClientTester());
+            while (i < 5){
+                i++;
                 executor.execute(new TestClientTester());
                 Thread.sleep(sleep);
             }
+
             executor.shutdown();
 
         } catch (InterruptedException e) {
@@ -41,7 +41,7 @@ class TestClientTester implements Runnable{
 
             SocketChannel socketChannel = SocketChannel.open();
 
-            try (socketChannel; Scanner scanner = new Scanner(System.in)) {
+            try (socketChannel) {
                 socketChannel.connect(socketAddress);
                 final ByteBuffer inputBuffer = ByteBuffer.allocate(2048);
                 int i = 0;
@@ -51,13 +51,13 @@ class TestClientTester implements Runnable{
 
                 while (i < 10) {
                     i++;
-                    String resultString = clientName + ": client command" + i;
+                    String resultString = clientName + ": какое-то сообщение" + i;
                     socketChannel.write(ByteBuffer.wrap(resultString.getBytes(StandardCharsets.UTF_8)));
                     Thread.sleep(TestServerSocketChannelServer.sleep);
 
                     int bytesCount = socketChannel.read(inputBuffer);
                     System.out.println(new String(inputBuffer.array(), 0, bytesCount, StandardCharsets.UTF_8));
-                    System.out.println();
+                    Thread.sleep(TestServerSocketChannelServer.sleep);
                     inputBuffer.clear();
                 }
             } catch (InterruptedException e) {
