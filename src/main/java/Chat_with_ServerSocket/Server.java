@@ -12,9 +12,9 @@ import java.util.concurrent.Executors;
 public class Server {
     static final Date data = new Date();
     static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
-    final private static int portNumber = 33333;
-    final private static String nameSettings = "settings.txt";
-    final private static String nameLog = "file.log";
+    final static int portNumber = 33333;
+    final static String nameSettings = "settings.txt";
+    final static String nameLog = "file.log";
     static ExecutorService executeIt =
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -99,26 +99,33 @@ class MonoThreadClient implements Runnable {
 
             while (!clientDialog.isClosed()) {
                 String entry;
-                while ((entry = in.readLine()) != null) {
-
-                    if (entry.equalsIgnoreCase("/exit")) {
-                        systemMSG("SYSTEM MESSAGE : Client initialize connections suicide ...");
-                        systemMSG("SYSTEM MESSAGE : Server reply - " + entry + " - OK");
-                        break;
+                try {
+                    while (true) {
+                        entry = in.readLine();
+                        out.write(entry + "\n");
+                        out.flush();
+                        try {
+                            if (entry.equalsIgnoreCase("/exit")) {
+                                systemMSG("SYSTEM MESSAGE : Client initialize connections suicide ...");
+                                systemMSG("SYSTEM MESSAGE : Server reply - " + entry + " - OK");
+                                clientDialog.close();
+                                break;
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        String reply = "Новое сообщение в чате\n" +
+                                new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").
+                                        format(Calendar.getInstance().getTime()) + entry;
+                        if (systemMSG(reply)) out.write(reply);
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                String reply = "Новое сообщение в чате\n" +
-                        new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").
-                                format(Calendar.getInstance().getTime()) + entry;
-                if (systemMSG(reply)) out.write(reply);
-                out.flush();
             }
 
             systemMSG("Client disconnected");
             systemMSG("Closing connections & channels");
-
-            clientDialog.close();
-
             systemMSG("Closing connections & channels - DONE");
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,7 +133,7 @@ class MonoThreadClient implements Runnable {
     }
 
     private boolean systemMSG(String msg) {
-        try (FileWriter writer = new FileWriter("file.log", true)) {
+        try (FileWriter writer = new FileWriter(Server.nameLog, true)) {
             writer.append(msg)
                     .append('\n')
                     .flush();

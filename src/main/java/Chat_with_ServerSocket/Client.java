@@ -25,25 +25,27 @@ public class Client {
             System.out.println("SYSTEM MESSAGE : Добро пожаловать, " + nickname + "!\n");
             out.write("SYSTEM MESSAGE : " + nickname + " entered the chatroom\n");
 
+            String clientCommand;
             while (true) {
                 System.out.println("Введите сообщение или '/exit': ");
-                String clientCommand = scanner.nextLine();
+                clientCommand = scanner.nextLine();
 
                 if (clientCommand.equalsIgnoreCase("/exit")) {
                     System.out.println("SYSTEM MESSAGE : connections were killed");
                     break;
                 }
-
-                System.out.println(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss ").
-                        format(Calendar.getInstance().getTime()) + nickname + " : " + clientCommand);
-                out.write( nickname + " : " + clientCommand + "\n");
+                out.write( new SimpleDateFormat("dd.MM.yyyy HH:mm:ss ").
+                        format(Calendar.getInstance().getTime()) + nickname + " : " + clientCommand + "\n");
                 out.flush();
 
-                if (!in.readLine().isEmpty()) {
-                    System.out.println("SYSTEM MESSAGE : reading server messages...");
-                    String incoming = in.readLine();
-                    System.out.println(incoming);
-                }
+                String input;
+                    try {
+                        if ((input = in.readLine()) != null) {
+                            System.out.println(input);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
             }
 
             System.out.println("Closing connections & channels on clintSide - DONE");
