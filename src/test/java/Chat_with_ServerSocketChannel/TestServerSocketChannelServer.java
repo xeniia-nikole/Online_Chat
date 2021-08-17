@@ -27,8 +27,6 @@ public class TestServerSocketChannelServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
